@@ -5,42 +5,105 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yboukhmi <yboukhmi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/25 12:32:05 by yboukhmi          #+#    #+#             */
-/*   Updated: 2025/11/25 19:08:30 by yboukhmi         ###   ########.fr       */
+/*   Created: 2025/11/26 11:55:48 by yboukhmi          #+#    #+#             */
+/*   Updated: 2025/11/26 18:00:15 by yboukhmi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	allocate_buff(int fd, char **buff)
+char	*extract_line(char *buff)
 {
-	size_t	fdlen;
-	
-	*buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!*buff)
-		return (0);
-	fdlen = read(fd, *buff, BUFFER_SIZE);
-	if (fdlen <= 0)
+	char	*line;
+	int		linelen;
+	int		i;
+
+	if (!buff)
+		return (NULL);
+	linelen = 0;
+	while (buff[linelen] != '\0' && buff[linelen] != '\n')
+		linelen++;
+	line = malloc(sizeof(char) * (linelen + 2));
+	if (!line)
+		return (NULL);
+	i = 0;
+	while (i < linelen)
 	{
-		free(*buff);
-		*buff = NULL;
-		return (0);
+		line[i] = buff[i];
+		i++;
 	}
-	(*buff)[fdlen] = '\0';
-	return (fdlen);	
+	if (buff[i] == '\n')
+		line[i++] = '\n';
+	line[i] = '\0';
+	return (line);
 }
 
-char *get_next_line(int fd)
+char	*readjust_buff(char *buff)
 {
-	static char	*buff[FD_SIZE];
-	char		*line;
-	
-	if (fd < 0 || fd >= FD_SIZE || BUFFER_SIZE <= 0)
+	char	*new_buff;
+	int		i;
+	int		j;
+
+	if (!buff)
 		return (NULL);
-	if(!buff[fd])
+	i = 0;
+	while (buff[i] && buff[i] != '\n')
+		i++;
+	if (buff[i] == '\n')
+		i++;
+	if (buff[i] == '\0')
 	{
-		if (allocate_buff(fd, &buff[fd]) == 0)
-			return (NULL);
+		free(buff);
+		return (NULL);
 	}
+	new_buff = malloc(sizeof(char) * (ft_strlen(buff) - i + 1));
+	if (!new_buff)
+		return (free(buff), NULL);
+	j = 0;
+	while (buff[i])
+		new_buff[j++] = buff[i++];
+	new_buff[j] = '\0';
+	free(buff);
+	return (new_buff);
+}
+
+char	*ft_read(char *buff, int fd)
+{
+	
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*buff;
+	char		*line;
+	int			fdlen;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE >= 2147483647)
+		return (NULL);
+	buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buff)
+		return (NULL);
+	fdlen = read(fd, buff, BUFFER_SIZE);
+	if (fdlen <= 0)
+	{
+		free(buff);
+		buff = NULL;
+		return (NULL);
+	}
+	buff[fdlen] = '\0';
+	line = extract_line(buff);
+	buff = readjust_buff(buff);
+	return (line);
+}
+
+int main()
+{
+	char *s, *s2;
+	int fd;
+
+	fd = open("hello.txt", O_RDWR);
+	s = get_next_line(fd);
+	s2 = get_next_line(fd);
+	printf("1: %s\n2: %s", s, s2);
 	
 }
