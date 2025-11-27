@@ -6,7 +6,7 @@
 /*   By: yboukhmi <yboukhmi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 11:55:48 by yboukhmi          #+#    #+#             */
-/*   Updated: 2025/11/27 15:46:26 by yboukhmi         ###   ########.fr       */
+/*   Updated: 2025/11/27 19:01:05 by yboukhmi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ char	*extract_line(char *buff)
 	int		linelen;
 	int		i;
 
-	if (!buff)
+	if (!buff || !buff[0])
 		return (NULL);
 	linelen = 0;
 	while (buff[linelen] != '\0' && buff[linelen] != '\n')
@@ -69,48 +69,51 @@ char	*readjust_buff(char *buff)
 
 char	*read_to_buff(char *buff, int fd)
 {
-	char *temp;
+	char	*temp;
+	char	*new_buff;
+	int		bytes_read;
 
 	temp = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	read(fd, temp, BUFFER_SIZE);
-	buff = ft_strjoin(buff, temp);
-	free (temp);
-	return (buff);
+	if (!temp)
+		return (NULL);
+	bytes_read = 1;
+	while (bytes_read > 0)
+	{
+		bytes_read = read(fd, temp, BUFFER_SIZE);
+		if (bytes_read < 0)
+			return (free(buff), free(temp), NULL);
+		if (bytes_read == 0)
+            break ;
+		temp[bytes_read] = '\0';
+		new_buff = ft_strjoin(buff, temp);
+		free(buff);
+		buff = new_buff;
+		if (!buff)
+			return (free(temp), NULL);
+		if (ft_strchr(buff, '\n'))
+			break ;		
+	}
+	return (free(temp), buff);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*buff;
-	//char		*line;
+	char		*line;
 	//int			fdlen;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE >= 2147483647)
 		return (NULL);
 	buff = read_to_buff(buff, fd);
-	/*buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buff)
 		return (NULL);
-	fdlen = read(fd, buff, BUFFER_SIZE);
-	if (fdlen <= 0)
+	line = extract_line(buff);
+	if (!line)
 	{
 		free(buff);
 		buff = NULL;
 		return (NULL);
 	}
-	buff[fdlen] = '\0';
-	line = extract_line(buff);
-	buff = readjust_buff(buff);*/
-	return (buff);
-}
-
-int main()
-{
-	char *s, *s2;
-	int fd;
-
-	fd = open("hello.txt", O_RDWR);
-	s = get_next_line(fd);
-	s2 = get_next_line(fd);
-	printf("1: %s\n2: %s", s, s2);
-	
+	buff = readjust_buff(buff);
+	return (line);
 }

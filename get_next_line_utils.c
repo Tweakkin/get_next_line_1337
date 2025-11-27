@@ -6,7 +6,7 @@
 /*   By: yboukhmi <yboukhmi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 11:56:10 by yboukhmi          #+#    #+#             */
-/*   Updated: 2025/11/27 15:31:45 by yboukhmi         ###   ########.fr       */
+/*   Updated: 2025/11/27 19:00:22 by yboukhmi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,34 @@ size_t	ft_strlen(const char *s)
 	size_t	i;
 
 	i = 0;
+	if (!s)
+		return (0);
 	while (s[i])
 		i++;
 	return (i);
 }
 
+char	*ft_strchr(const char *s, int c)
+{
+	size_t	i;
+
+	i = 0;
+	if (!s)
+		return (NULL);
+	if ((char)c == '\0')
+		return ((char *)&s[ft_strlen(s)]);
+	while (s[i] != '\0')
+	{
+		if (s[i] == (char)c)
+			return ((char *)&s[i]);
+		i++;
+	}
+	return (NULL);
+}
+
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*new_str;
-	size_t	i;
 
 	if (!s1 && !s2)
 		return (NULL);
@@ -64,6 +83,8 @@ char	*ft_strdup(const char *s1)
 {
 	char	*str_copy;
 
+	if (!s1)
+		return (NULL);
 	str_copy = malloc(sizeof(char) * (ft_strlen(s1) + 1));
 	if (!str_copy)
 		return (NULL);
