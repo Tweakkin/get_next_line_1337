@@ -6,7 +6,7 @@
 /*   By: yboukhmi <yboukhmi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 11:56:14 by yboukhmi          #+#    #+#             */
-/*   Updated: 2025/11/26 17:32:23 by yboukhmi         ###   ########.fr       */
+/*   Updated: 2025/11/27 15:32:02 by yboukhmi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@
 char	*get_next_line(int fd);
 char	*extract_line(char *buff);
 char	*readjust_buff(char *buff);
-size_t	ft_strlen(char *s);
+size_t	ft_strlen(const char *s);
+char	*ft_strjoin(char const *s1, char const *s2);
+void	*ft_memcpy(void *dst, const void *src, size_t n);
+char	*ft_strdup(const char *s1);
 
 #endif

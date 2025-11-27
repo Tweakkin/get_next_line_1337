@@ -6,7 +6,7 @@
 /*   By: yboukhmi <yboukhmi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 11:55:48 by yboukhmi          #+#    #+#             */
-/*   Updated: 2025/11/26 18:00:15 by yboukhmi         ###   ########.fr       */
+/*   Updated: 2025/11/27 15:46:26 by yboukhmi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,20 +67,27 @@ char	*readjust_buff(char *buff)
 	return (new_buff);
 }
 
-char	*ft_read(char *buff, int fd)
+char	*read_to_buff(char *buff, int fd)
 {
-	
+	char *temp;
+
+	temp = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	read(fd, temp, BUFFER_SIZE);
+	buff = ft_strjoin(buff, temp);
+	free (temp);
+	return (buff);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*buff;
-	char		*line;
-	int			fdlen;
+	//char		*line;
+	//int			fdlen;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE >= 2147483647)
 		return (NULL);
-	buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	buff = read_to_buff(buff, fd);
+	/*buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buff)
 		return (NULL);
 	fdlen = read(fd, buff, BUFFER_SIZE);
@@ -92,8 +99,8 @@ char	*get_next_line(int fd)
 	}
 	buff[fdlen] = '\0';
 	line = extract_line(buff);
-	buff = readjust_buff(buff);
-	return (line);
+	buff = readjust_buff(buff);*/
+	return (buff);
 }
 
 int main()
